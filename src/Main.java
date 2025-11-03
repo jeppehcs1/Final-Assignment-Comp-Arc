@@ -1,16 +1,32 @@
+import java.io.FileInputStream;  // Import FileInputStream
+import java.io.IOException;      // Import IOException
+
+
 public class Main {
     static int pc;
     static int reg[] = new int[4];
 
     // Here the first program hard coded as an array
-    static int progr[] = {
-            // As minimal RISC-V assembler example
-            0x00200093, // addi x1 x0 2
-            0x00300113, // addi x2 x0 3
-            0x002081b3, // add x3 x1 x2
-    };
+    static int progr[] = new int[30];
 
     public static void main(String[] args) {
+        // try-with-resources: FileInputStream will be closed automatically
+        try (FileInputStream input = new FileInputStream("filename.txt")) {
+            int counter = 0;
+            int i;  // variable to store each byte that is read
+            byte[] buffer = new byte[4];
+            // Read one byte at a time until end of file (-1 means "no more data")
+            while ((i = input.read(buffer)) != -1) {
+                // Convert the byte to a character and print it to the console
+                progr[counter] = i;
+                counter++;
+            }
+
+        } catch (IOException e) {
+            // If an error happens (e.g. file not found), print an error message
+            System.out.println("Error reading file.");
+        }
+
 
         System.out.println("Hello RISC-V World!");
 
