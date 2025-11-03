@@ -46,6 +46,8 @@ public class Main {
                 case 0b0110011:
                     handleRType(instr);
                     break;
+                case 0b1100011:
+                    handleBType(instr);
                 default:
                     System.out.println("Opcode " + opcode + " not yet implemented");
                     break;
@@ -131,14 +133,43 @@ public class Main {
                 System.out.println("TODO");
                 break;
             case 0x2:
-                reg[rs1] = (rs1 < imm)?1:0;
+                reg[rs1] = (rs1 < imm) ? 1 : 0;
                 break;
             case 0x3:
                 System.out.println("TODO");
-                reg[rs1] = (rs1 < imm)?1:0;
+                reg[rs1] = (rs1 < imm) ? 1 : 0;
                 break;
             default:
                 System.out.println("Funct3 for I type" + funct3 + " not yet implemented");
+                break;
+        }
+    }
+
+    private static void handleBType(int instr){
+        int funct3 = (instr >> 12) & 0x7;
+        int rs1 = (instr >> 15) & 0x1F;
+        int rs2 = (instr >> 20) & 0x1F;
+
+
+        int imm = ((instr >> 31) & 0x1) << 12 |
+                ((instr >> 7) & 0x1) << 11 |
+                ((instr >> 25) & 0x3F) << 5 |
+                ((instr >> 8) & 0xF) << 1;
+
+        if ((imm & 0x1000) != 0) imm |= 0xFFFFE000;
+
+        switch (funct3) {
+            case 0x0:
+                if (reg[rs1] == reg[rs2]) pc += imm;
+                break;
+            case 0x1:
+                if (reg[rs1] != reg[rs2]) pc += imm;
+                break;
+            case 0x4:
+                if (reg[rs1] < reg[rs2]) pc += imm;
+                break;
+            case 0x5:
+                if (reg[rs1] >= reg[rs2]) pc += imm;
                 break;
         }
 
