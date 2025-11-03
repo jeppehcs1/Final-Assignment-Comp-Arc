@@ -50,11 +50,12 @@ public class Main {
     }
 
     private static void handleRType(int instr) {
+
         int rd = (instr >> 7) & 0x01f;
-        int funct3 = (instr >> 12) & 0x01f;
+        int funct3 = (instr >> 12) & 0x7;
         int rs1 = (instr >> 15) & 0x01f;
         int rs2 = (instr >> 20) & 0x01f;
-        int funct7 = (instr >> 25) & 0x01f;
+        int funct7 = (instr >> 25) & 0x7f;
         switch (funct3) {
             case 0x0:
                 reg[rd] = (funct7 == 0x00) ? reg[rs1] + reg[rs2]: reg[rs1] - reg[rs2];
@@ -91,7 +92,7 @@ public class Main {
     private static void handleIType(int instr) {
         int rd = (instr >> 7) & 0x01f;
         int rs1 = (instr >> 15) & 0x01f;
-        int funct3 = (instr >> 12) & 0x01f;
+        int funct3 = (instr >> 12) & 0x7;
         int imm = (instr >> 20);
 
         switch (funct3) {
