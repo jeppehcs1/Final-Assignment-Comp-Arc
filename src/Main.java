@@ -1,5 +1,7 @@
+import java.io.BufferedWriter;
 import java.io.FileInputStream;  // Import FileInputStream
-import java.io.IOException;      // Import IOException
+import java.io.FileWriter;
+import java.io.IOException;
 
 
 public class Main {
@@ -7,11 +9,22 @@ public class Main {
     static int reg[] = new int[4];
 
     // Here the first program hard coded as an array
-    static int progr[] = new int[30];
+    static int progr[] = {
+            // As minimal RISC-V assembler example
+            0x00200093, // addi x1 x0 2
+            0x00300113, // addi x2 x0 3
+            0x002081b3, // add x3 x1 x2
+    };
 
-    public static void main(String[] args) {
-        // try-with-resources: FileInputStream will be closed automatically
-        try (FileInputStream input = new FileInputStream("filename.txt")) {
+    public static void main(String[] args) throws IOException {
+        if (args.length == 0) {
+            System.out.println("Usage: java Main <file>");
+            return;
+        }
+        String inputPath = args[1];
+        String outputPath = inputPath.replaceAll("\\.bin$", "") + ".res";
+
+        try (FileInputStream input = new FileInputStream(inputPath)) {
             int counter = 0;
             int i;  // variable to store each byte that is read
             byte[] buffer = new byte[4];
@@ -26,7 +39,6 @@ public class Main {
             // If an error happens (e.g. file not found), print an error message
             System.out.println("Error reading file.");
         }
-
 
         System.out.println("Hello RISC-V World!");
 
@@ -61,6 +73,12 @@ public class Main {
                 System.out.print(reg[i] + " ");
             }
             System.out.println();
+        }
+
+        try (BufferedWriter outputWriter = new BufferedWriter(new FileWriter(outputPath))){
+            for (int i = 0; i < reg.length; ++i) {
+                outputWriter.write(reg[i] + "\n");
+            }
         }
 
         System.out.println("Program exit");
