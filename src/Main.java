@@ -1,20 +1,18 @@
 import java.io.BufferedWriter;
 import java.io.FileInputStream;  // Import FileInputStream
+import java.io.IOException;      // Import IOException
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.io.FileWriter;
-import java.io.IOException;
+
 
 
 public class Main {
     static int pc;
-    static int reg[] = new int[4];
+    static int reg[] = new int[32];
 
     // Here the first program hard coded as an array
-    static int progr[] = {
-            // As minimal RISC-V assembler example
-            0x00200093, // addi x1 x0 2
-            0x00300113, // addi x2 x0 3
-            0x002081b3, // add x3 x1 x2
-    };
+    static int progr[] = new int[30];
 
     public static void main(String[] args) throws IOException {
         if (args.length == 0) {
@@ -31,14 +29,18 @@ public class Main {
             // Read one byte at a time until end of file (-1 means "no more data")
             while ((i = input.read(buffer)) != -1) {
                 // Convert the byte to a character and print it to the console
-                progr[counter] = i;
+                ByteBuffer bb = ByteBuffer.wrap(buffer);
+                bb.order(ByteOrder.LITTLE_ENDIAN); // or BIG_ENDIAN depending on your data
+                int value = bb.getInt();
+                progr[counter] = value;
                 counter++;
             }
 
         } catch (IOException e) {
             // If an error happens (e.g. file not found), print an error message
-            System.out.println("Error reading file.");
+            System.out.println("Error reading file." + e.getMessage());
         }
+
 
         System.out.println("Hello RISC-V World!");
 
@@ -60,8 +62,16 @@ public class Main {
                     break;
                 case 0b1100011:
                     handleBType(instr);
+
+
+                case 0b0110111:
+                    LoadUpperImm(instr);
+                    break;
+                case 0b0010111:
+                    AddUpperImmToPC(instr);
+                    break;
                 default:
-                    System.out.println("Opcode " + opcode + " not yet implemented");
+                    System.out.println("Opcode " + Integer.toBinaryString(opcode) + " not yet implemented");
                     break;
             }
 
@@ -81,8 +91,23 @@ public class Main {
             }
         }
 
+        for (int i = 0; i < progr.length; i++) {
+            System.out.println(Integer.toHexString(progr[i]));
+        }
         System.out.println("Program exit");
 
+    }
+
+    private static void AddUpperImmToPC(int instr) {
+        int rd = (instr >> 7) & 0x01f;
+        int imm = (instr >> 12);
+        reg[rd] = pc + imm;
+    }
+
+    private static void LoadUpperImm(int instr) {
+        int rd = (instr >> 7) & 0x01f;
+        int imm = (instr >> 12);
+        reg[rd] = imm;
     }
 
     private static void handleRType(int instr) {
@@ -151,11 +176,11 @@ public class Main {
                 System.out.println("TODO");
                 break;
             case 0x2:
-                reg[rs1] = (rs1 < imm) ? 1 : 0;
+                reg[rs1] = (rs1 < imm)?1:0;
                 break;
             case 0x3:
                 System.out.println("TODO");
-                reg[rs1] = (rs1 < imm) ? 1 : 0;
+                reg[rs1] = (rs1 < imm)?1:0;
                 break;
             default:
                 System.out.println("Funct3 for I type" + funct3 + " not yet implemented");
