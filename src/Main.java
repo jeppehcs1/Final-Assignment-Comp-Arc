@@ -65,8 +65,10 @@ public class Main {
                     AddUpperImmToPC(instr);
                     break;
                 case 0b1110011:
-                    EnvironmentHandle(instr);
-                    break main_loop;
+                    if (EnvironmentHandle(instr)) {
+                        break main_loop;
+                    }
+
 
                 default:
                     System.out.println("Opcode " + Integer.toBinaryString(opcode) + " not yet implemented");
@@ -93,9 +95,58 @@ public class Main {
 
     }
 
-    private static void EnvironmentHandle(int instr) {
+    private static boolean EnvironmentHandle(int instr) {
         int imm = (instr >> 20);
+        if (imm == 0x0) {
+            return EnvironmentCall();
+        }
+        return false;
 
+    }
+
+    private static boolean EnvironmentCall() {
+        int id = reg[17];
+        int val = reg[10];
+        switch (id) {
+            case 1:
+                // print_int
+                System.out.println(val);
+                return false;
+            case 2:
+                // print_float
+                System.out.println(Float.intBitsToFloat(val));
+                return false;
+            case 4:
+                // print_string
+                System.out.println("environment call string not done yet");
+                return false;
+            case 10:
+                // exit
+                return true;
+            case 11:
+                // print_char
+                System.out.println((char) val);
+                return false;
+            case 34:
+                // print_hex
+                System.out.println(Integer.toHexString(val));
+                return false;
+            case 35:
+                // print_bin
+                System.out.println(Integer.toBinaryString(val));
+                return false;
+            case 36:
+                // print_unsigned
+                System.out.println(Integer.toUnsignedLong(val));
+                return false;
+            case 93:
+                // exit 2
+
+                return true;
+            default:
+                System.out.println("Unknown environment");
+                return false;
+        }
     }
 
     private static void AddUpperImmToPC(int instr) {
