@@ -38,7 +38,7 @@ public class Main {
 
         } catch (IOException e) {
             // If an error happens (e.g. file not found), print an error message
-            System.out.println("Error reading file." + e.getMessage());
+            System.out.println("Error reading file. " + e.getMessage());
         }
 
 
