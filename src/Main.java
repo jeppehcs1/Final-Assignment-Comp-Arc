@@ -1,10 +1,6 @@
-import java.io.BufferedWriter;
-import java.io.FileInputStream;  // Import FileInputStream
-import java.io.IOException;      // Import IOException
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.io.FileWriter;
-
 
 
 public class Main {
@@ -19,9 +15,8 @@ public class Main {
             System.out.println("Usage: java Main <file>");
             return;
         }
-        String inputPath = args[1];
+        String inputPath = "src/" + args[1];
         String outputPath = inputPath.replaceAll("\\.bin$", "") + ".res";
-
         try (FileInputStream input = new FileInputStream(inputPath)) {
             int counter = 0;
             int i;  // variable to store each byte that is read
@@ -30,7 +25,7 @@ public class Main {
             while ((i = input.read(buffer)) != -1) {
                 // Convert the byte to a character and print it to the console
                 ByteBuffer bb = ByteBuffer.wrap(buffer);
-                bb.order(ByteOrder.LITTLE_ENDIAN); // or BIG_ENDIAN depending on your data
+                bb.order(ByteOrder.LITTLE_ENDIAN);
                 int value = bb.getInt();
                 progr[counter] = value;
                 counter++;
@@ -119,28 +114,36 @@ public class Main {
         int funct7 = (instr >> 25) & 0x7f;
         switch (funct3) {
             case 0x0:
+                //ADD or SUB
                 reg[rd] = (funct7 == 0x00) ? reg[rs1] + reg[rs2]: reg[rs1] - reg[rs2];
                 break;
             case 0x4:
+                //XOR
                 reg[rd] = reg[rs1] ^ reg[rs2];
                 break;
             case 0x6:
+                //OR
                 reg[rs1] = reg[rs1] | reg[rs2];
                 break;
             case 0x7:
+                //AND
                 reg[rs1] = reg[rs1] & reg[rs2];
                 break;
             case 0x1:
+                //Shift Left Logical
                 reg[rs1] = reg[rs1] << reg[rs2];
                 break;
             case 0x5:
+                //Shift Right logical or Ahift Right Arithmetic
                 System.out.println("TODO");
                 reg[rs1] = reg[rs1] << reg[rs2];
                 break;
             case 0x2:
+                //Set Less Than
                 reg[rs1] = (rs1 < rs2) ? 1 : 0;
                 break;
             case 0x3:
+                //Set Less Than Unsigned
                 System.out.println("TODO");
                 reg[rs1] = (rs1 < rs2) ? 1 : 0;
                 break;
