@@ -129,15 +129,15 @@ public class Main {
                 break;
             case 0x6:
                 //OR
-                reg[rd] = reg[rs1] | reg[rs2];
+                reg[rs1] = reg[rs1] | reg[rs2];
                 break;
             case 0x7:
                 //AND
-                reg[rd] = reg[rs1] & reg[rs2];
+                reg[rs1] = reg[rs1] & reg[rs2];
                 break;
             case 0x1:
                 //Shift Left Logical
-                reg[rd] = reg[rs1] << reg[rs2];
+                reg[rs1] = reg[rs1] << reg[rs2];
                 break;
             case 0x5:
                 //Shift Right logical or Ahift Right Arithmetic
