@@ -126,22 +126,22 @@ public class Main {
                 break;
             case 0x6:
                 //OR
-                reg[rs1] = reg[rs1] | reg[rs2];
+                reg[rd] = reg[rs1] | reg[rs2];
                 break;
             case 0x7:
                 //AND
-                reg[rs1] = reg[rs1] & reg[rs2];
+                reg[rd] = reg[rs1] & reg[rs2];
                 break;
             case 0x1:
                 //Shift Left Logical
-                reg[rs1] = reg[rs1] << reg[rs2];
+                reg[rd] = reg[rs1] << reg[rs2];
                 break;
             case 0x5:
                 //Shift Right logical or Ahift Right Arithmetic
                 if (funct7 == 0x00)
-                    reg[rd] = reg[rs1] >>> reg[rs2]; // SRL
+                    reg[rd] = reg[rs1] >>> reg[rs2];
                 else if (funct7 == 0x20)
-                    reg[rd] = reg[rs1] >> reg[rs2];  // SRA
+                    reg[rd] = reg[rs1] >> reg[rs2];
                 break;
             case 0x2:
                 //Set Less Than
