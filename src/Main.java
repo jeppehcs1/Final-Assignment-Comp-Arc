@@ -17,6 +17,7 @@ public class Main {
         }
         String inputPath = "src/" + args[1];
         String outputPath = inputPath.replaceAll("\\.bin$", "") + ".res";
+
         try (FileInputStream input = new FileInputStream(inputPath)) {
             int counter = 0;
             int i;  // variable to store each byte that is read
@@ -36,7 +37,6 @@ public class Main {
             System.out.println("Error reading file. " + e.getMessage());
         }
 
-
         System.out.println("Hello RISC-V World!");
 
         pc = 0;
@@ -44,6 +44,8 @@ public class Main {
         main_loop: for (; ; ) {
             int instr = progr[pc >> 2];
             int opcode = instr & 0x7f;
+
+
             switch (opcode) {
 
                 case 0b0010011:
@@ -83,9 +85,10 @@ public class Main {
 
         try (BufferedWriter outputWriter = new BufferedWriter(new FileWriter(outputPath))){
             for (int i = 0; i < reg.length; ++i) {
-                outputWriter.write(reg[i] + "\n");
+                outputWriter.write(reg[i]);
             }
         }
+
         System.out.println("Program exit");
 
     }
@@ -145,7 +148,7 @@ public class Main {
                 break;
             case 0x2:
                 //Set Less Than
-                reg[rs1] = (rs1 < rs2) ? 1 : 0;
+                reg[rd] = (rs1 < rs2) ? 1 : 0;
                 break;
             case 0x3:
                 //Set Less Than Unsigned
@@ -163,33 +166,45 @@ public class Main {
         int rd = (instr >> 7) & 0x01f;
         int rs1 = (instr >> 15) & 0x01f;
         int funct3 = (instr >> 12) & 0x7;
-        int imm = (instr >> 20);
+        int imm = (instr >> 20) & 0xFFF;
+        int funct7 = (instr >> 25) & 0x7f;
 
         switch (funct3) {
             case 0x0:
+                //Add immediate
                 reg[rd] = reg[rs1] + imm;
                 break;
             case 0x4:
+                //XOR immediate
                 reg[rd] = reg[rs1] ^ imm;
                 break;
             case 0x6:
-                reg[rs1] = reg[rs1] | imm;
+                //OR immediate
+                reg[rd] = reg[rs1] | imm;
                 break;
             case 0x7:
-                reg[rs1] = reg[rs1] & imm;
+                //AND immediate
+                reg[rd] = reg[rs1] & imm;
                 break;
             case 0x1:
-                System.out.println("TODO");
+                //Shift left logical immediate
+                reg[rd] = reg[rs1] << imm;
                 break;
             case 0x5:
-                System.out.println("TODO");
+                //Shift right arith/logical immediate
+                if (funct7 == 0x00){
+                    reg[rd] = reg[rs1] >>> imm;
+                } else {
+                    reg[rd] = reg[rs1] >> imm;
+                }
                 break;
             case 0x2:
-                reg[rs1] = (rs1 < imm)?1:0;
+                //Set less than immediate
+                reg[rd] = (rs1 < imm) ? 1 : 0;
                 break;
             case 0x3:
-                System.out.println("TODO");
-                reg[rs1] = (rs1 < imm)?1:0;
+                //Set less than immediate unsigned
+                reg[rd] = (Integer.toUnsignedLong(reg[rs1]) < Integer.toUnsignedLong(imm)) ? 1 : 0;
                 break;
             default:
                 System.out.println("Funct3 for I type" + funct3 + " not yet implemented");
@@ -224,5 +239,7 @@ public class Main {
                 if (reg[rs1] >= reg[rs2]) pc += imm;
                 break;
         }
+
     }
+
 }
