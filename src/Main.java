@@ -8,7 +8,7 @@ public class Main {
     static int reg[] = new int[32];
 
     // Here the first program hard coded as an array
-    static int progr[] = new int[30];
+    static int progr[] = new int[20];
 
     public static void main(String[] args) throws IOException {
         if (args.length == 0) {
@@ -41,12 +41,9 @@ public class Main {
 
         pc = 0;
 
-        for (; ; ) {
-
+        main_loop: for (; ; ) {
             int instr = progr[pc >> 2];
             int opcode = instr & 0x7f;
-
-
             switch (opcode) {
 
                 case 0b0010011:
@@ -65,6 +62,10 @@ public class Main {
                 case 0b0010111:
                     AddUpperImmToPC(instr);
                     break;
+                case 0b1110011:
+                    EnvironmentHandle(instr);
+                    break main_loop;
+
                 default:
                     System.out.println("Opcode " + Integer.toBinaryString(opcode) + " not yet implemented");
                     break;
@@ -85,24 +86,26 @@ public class Main {
                 outputWriter.write(reg[i] + "\n");
             }
         }
-
-        for (int i = 0; i < progr.length; i++) {
-            System.out.println(Integer.toHexString(progr[i]));
-        }
         System.out.println("Program exit");
+
+    }
+
+    private static void EnvironmentHandle(int instr) {
+        int imm = (instr >> 20);
 
     }
 
     private static void AddUpperImmToPC(int instr) {
         int rd = (instr >> 7) & 0x01f;
         int imm = (instr >> 12);
-        reg[rd] = pc + imm;
+        System.out.println(Integer.toBinaryString(imm));
+        reg[rd] = pc + (imm << 12);
     }
 
     private static void LoadUpperImm(int instr) {
         int rd = (instr >> 7) & 0x01f;
         int imm = (instr >> 12);
-        reg[rd] = imm;
+        reg[rd] = imm << 12;
     }
 
     private static void handleRType(int instr) {
