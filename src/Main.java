@@ -151,10 +151,7 @@ public class Main {
                 reg[rd] = (rs1 < rs2) ? 1 : 0;
                 break;
             case 0x3:
-                //Set Less Than Unsigned
-                long a = reg[rs1] & 0xFFFFFFFFL;  // zero-extend til 64 bit
-                long b = reg[rs2] & 0xFFFFFFFFL;
-                reg[rd] = (a < b) ? 1 : 0;
+                reg[rd] = (Integer.compareUnsigned(reg[rs1], reg[rs2]) < 0) ? 1 : 0;
                 break;
             default:
                 System.out.println("Funct3 for R type " + funct3 + " not yet implemented");
