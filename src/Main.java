@@ -138,8 +138,10 @@ public class Main {
                 break;
             case 0x5:
                 //Shift Right logical or Ahift Right Arithmetic
-                System.out.println("TODO");
-                reg[rs1] = reg[rs1] << reg[rs2];
+                if (funct7 == 0x00)
+                    reg[rd] = reg[rs1] >>> reg[rs2]; // SRL
+                else if (funct7 == 0x20)
+                    reg[rd] = reg[rs1] >> reg[rs2];  // SRA
                 break;
             case 0x2:
                 //Set Less Than
@@ -147,8 +149,9 @@ public class Main {
                 break;
             case 0x3:
                 //Set Less Than Unsigned
-                System.out.println("TODO");
-                reg[rs1] = (rs1 < rs2) ? 1 : 0;
+                long a = reg[rs1] & 0xFFFFFFFFL;  // zero-extend til 64 bit
+                long b = reg[rs2] & 0xFFFFFFFFL;
+                reg[rd] = (a < b) ? 1 : 0;
                 break;
             default:
                 System.out.println("Funct3 for R type " + funct3 + " not yet implemented");
@@ -221,7 +224,5 @@ public class Main {
                 if (reg[rs1] >= reg[rs2]) pc += imm;
                 break;
         }
-
     }
-
 }
