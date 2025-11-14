@@ -58,7 +58,6 @@ public class Main {
                     handleBType(instr);
                     break;
 
-
                 case 0b0110111:
                     LoadUpperImm(instr);
                     break;
@@ -80,16 +79,23 @@ public class Main {
             if ((pc >> 2) >= progr.length) {
                 break;
             }
+
             for (int i = 0; i < reg.length; ++i) {
                 System.out.print(reg[i] + " ");
             }
             System.out.println();
 
+
         }
 
-        try (BufferedWriter outputWriter = new BufferedWriter(new FileWriter(outputPath))){
+        ByteBuffer buffer = ByteBuffer.allocate(4);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+
+        try (FileOutputStream fos = new FileOutputStream(outputPath)) {
             for (int i = 0; i < reg.length; ++i) {
-                outputWriter.write(reg[i]);
+                buffer.clear();
+                buffer.putInt(reg[i]);
+                fos.write(buffer.array());
             }
         }
 
