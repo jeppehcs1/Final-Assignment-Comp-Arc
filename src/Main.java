@@ -8,7 +8,7 @@ public class Main {
     static int reg[] = new int[32];
 
     // Here the first program hard coded as an array
-    static int progr[] = new int[20];
+    static int progr[] = new int[200];
 
     public static void main(String[] args) throws IOException {
         if (args.length == 0) {
@@ -56,6 +56,7 @@ public class Main {
                     break;
                 case 0b1100011:
                     handleBType(instr);
+                    break;
 
 
                 case 0b0110111:
@@ -83,6 +84,7 @@ public class Main {
                 System.out.print(reg[i] + " ");
             }
             System.out.println();
+
         }
 
         try (BufferedWriter outputWriter = new BufferedWriter(new FileWriter(outputPath))){
@@ -152,7 +154,6 @@ public class Main {
     private static void AddUpperImmToPC(int instr) {
         int rd = (instr >> 7) & 0x01f;
         int imm = (instr >> 12);
-        System.out.println(Integer.toBinaryString(imm));
         reg[rd] = pc + (imm << 12);
     }
 
@@ -180,15 +181,15 @@ public class Main {
                 break;
             case 0x6:
                 //OR
-                reg[rs1] = reg[rs1] | reg[rs2];
+                reg[rd] = reg[rs1] | reg[rs2];
                 break;
             case 0x7:
                 //AND
-                reg[rs1] = reg[rs1] & reg[rs2];
+                reg[rd] = reg[rs1] & reg[rs2];
                 break;
             case 0x1:
                 //Shift Left Logical
-                reg[rs1] = reg[rs1] << reg[rs2];
+                reg[rd] = reg[rs1] << reg[rs2];
                 break;
             case 0x5:
                 //Shift Right logical or Ahift Right Arithmetic
@@ -214,7 +215,7 @@ public class Main {
         int rd = (instr >> 7) & 0x01f;
         int rs1 = (instr >> 15) & 0x01f;
         int funct3 = (instr >> 12) & 0x7;
-        int imm = (instr >> 20) & 0xFFF;
+        int imm = (instr >> 20);
         int funct7 = (instr >> 25) & 0x7f;
 
         switch (funct3) {
@@ -275,16 +276,22 @@ public class Main {
 
         switch (funct3) {
             case 0x0:
-                if (reg[rs1] == reg[rs2]) pc += imm;
+                if (reg[rs1] == reg[rs2]) pc += imm - 4;
                 break;
             case 0x1:
-                if (reg[rs1] != reg[rs2]) pc += imm;
+                if (reg[rs1] != reg[rs2]) pc += imm - 4;
                 break;
             case 0x4:
-                if (reg[rs1] < reg[rs2]) pc += imm;
+                if (reg[rs1] < reg[rs2]) pc += imm - 4;
                 break;
             case 0x5:
-                if (reg[rs1] >= reg[rs2]) pc += imm;
+                if (reg[rs1] >= reg[rs2]) pc += imm - 4;
+                break;
+            case 0x6:
+                if (Integer.toUnsignedLong(reg[rs1]) < Integer.toUnsignedLong(reg[rs2])) pc += imm - 4;
+                break;
+            case 0x7:
+                if (Integer.toUnsignedLong(reg[rs1]) >= Integer.toUnsignedLong(reg[rs2])) pc += imm - 4;
                 break;
         }
 
