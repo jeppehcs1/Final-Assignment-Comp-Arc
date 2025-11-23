@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         if (args.length == 0) {
-            System.out.println("Usage: java IsaSim <file>");
+            System.out.println("Usage: java Main <file>");
             return;
         }
         String inputPath = args[0];
